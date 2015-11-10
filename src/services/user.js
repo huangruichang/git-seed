@@ -1,3 +1,5 @@
+
+var _ = require('lodash');
 var CoreException = require('../result/exception');
 var Success = require('../result/success');
 var User = require('../models/user');
@@ -23,6 +25,7 @@ var UserService = {
             if (!result) {
                 return next(CoreException.of(CoreException.USER_PASSWORD_ERROR));
             }
+            user = _.omit(user.toJSON(), ['password', 'createdAt', 'updatedAt']);
             req.session['currentUser'] = user;
             return next(Success(user));
         });
