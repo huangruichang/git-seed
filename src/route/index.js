@@ -1,4 +1,5 @@
 var UserRoute = require('./user');
+var ProjectRoute = require('./project');
 var wrap = function (app) {
 
     app.get('/hello', function (res, req, next) {
@@ -6,6 +7,7 @@ var wrap = function (app) {
     });
 
     UserRoute(app);
+    ProjectRoute(app);
 };
 
 var route = {

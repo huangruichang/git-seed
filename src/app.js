@@ -5,9 +5,9 @@ var session = require('express-session');
 var route = require('./route');
 var server = require('http').createServer(app);
 var parser = require('./middleware/parser');
+var loginRequired = require('./middleware/login_required');
 var PORT = process.env.PORT || 3000;
 
-app.use(parser);
 app.use(session({
     secret: 'git-seed',
     resave: false,
@@ -16,6 +16,8 @@ app.use(session({
         secure: false
     }
 }));
+app.use('/api', loginRequired);
+app.use(parser);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
