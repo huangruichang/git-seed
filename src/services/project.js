@@ -5,6 +5,7 @@ var Project = require('../models/project');
 var ProjectMember = require('../models/project_member');
 var User = require('../models/user');
 var _ = require('lodash');
+var Promise = require('bluebird');
 
 var ProjectService = {
 
@@ -17,23 +18,29 @@ var ProjectService = {
     listPrivate: function (req, res, next) {
         var offset = req.query['offset'];
         var limit = req.query['limit'];
-        var queryObj = {};
+        var where = {};
         this.legal.forEach(function (v, i) {
             if (v in req.query) {
-                queryObj[v] = req.query[v];
+                where[v] = req.query[v];
             }
         });
-        var query = _.extend({
+
+        var queryingProjectMember = {
+            where: where,
             offset: offset,
             limit: limit
-        }, queryObj);
+        };
 
-        this.getProjectMembersByUser().then(function (projectMembers) {
+        var pmPromise = ProjectMember.findAll(queryingProjectMember);
+        pmPromise.catch(function (error) {
+            console.log(error);
+        });
+        pmPromise.then(function (projectMembers) {
             if (!projectMembers || projectMembers.length === 0) {
                 return next(Success([]));
             }
 
-            var promise = new Promise();
+            var promise = new Promise(function () {});
             var projects = [];
             projectMembers.forEach(function (v, i) {
                 promise = promise.then(function (project) {
@@ -62,15 +69,19 @@ var ProjectService = {
 
     createProject: function (req, res, next, values) {
         var uPromise = User.findOne({
-            id: values.user_id
+            where: {
+                id: values.user_id
+            }
         });
         uPromise.then(function (user) {
             if (!user) {
                 return next(CoreException.of(CoreException.PARAMETER_INVALID));
             }
             var pPromise = Project.findOne({
-                owner_id: values.owner_id,
-                name: values.name
+                where: {
+                    owner_id: values.owner_id,
+                    name: values.name
+                }
             });
             pPromise.then(function (project) {
                 if (project) {
@@ -86,7 +97,7 @@ var ProjectService = {
                     description: description,
                     icon: ''        //待定
                 };
-                var npPromise = Project.create(newProject)
+                var npPromise = Project.create(newProject);
                 npPromise.then(function (project_id) {
                     if (project_id > 0) {
                         // 创建 Git 仓库
@@ -103,19 +114,6 @@ var ProjectService = {
             });
         });
         uPromise.catch(next);
-    },
-
-    getProjectMembersByUser: function (user, type) {
-        var query = {
-            user_id: user.id,
-            order: [
-                ['createdAt', 'DESC']
-            ]
-        };
-        if (type) {
-            query.type = type;
-        }
-        return ProjectMember.findAll(query);
     }
 };
 

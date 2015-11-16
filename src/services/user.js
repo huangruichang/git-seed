@@ -17,7 +17,9 @@ var UserService = {
         }
 
         var uPromise = User.findOne({
-            email: email
+            where: {
+                email: email
+            }
         });
         uPromise.then(function (user) {
             if (!user) next(CoreException.of(CoreException.USER_NOT_EXISTS));

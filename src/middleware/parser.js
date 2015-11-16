@@ -6,7 +6,7 @@ module.exports = function (req, res, next) {
     var query = req.query;
 
     if (method === 'GET') {
-        var limit = 10;
+        var limit = undefined;
         if ('limit' in query) {
             limit = ~~query['limit'];
         }
@@ -15,7 +15,7 @@ module.exports = function (req, res, next) {
         }
         query['limit'] = limit;
 
-        var offset = 0;
+        var offset = undefined;
         var page = null;
         if ('offset' in query) {
             offset = ~~query['offset'];
