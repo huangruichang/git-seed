@@ -18,12 +18,9 @@ var ProjectService = {
     listPrivate: function (req, res, next) {
         var offset = req.query['offset'];
         var limit = req.query['limit'];
-        var where = {};
-        this.legal.forEach(function (v, i) {
-            if (v in req.query) {
-                where[v] = req.query[v];
-            }
-        });
+        var where = {
+            user_id: req.session['currentUser'].id
+        };
 
         var queryingProjectMember = {
             where: where,
@@ -32,37 +29,29 @@ var ProjectService = {
         };
 
         var pmPromise = ProjectMember.findAll(queryingProjectMember);
-        pmPromise.catch(function (error) {
-            console.log(error);
-        });
+
         pmPromise.then(function (projectMembers) {
             if (!projectMembers || projectMembers.length === 0) {
                 return next(Success([]));
             }
 
-            var promise = new Promise(function () {});
-            var projects = [];
+            var projectIds = [];
             projectMembers.forEach(function (v, i) {
-                promise = promise.then(function (project) {
-                    if (project && i !== 0) {
-                        projects.push(project);
-                    }
-
-                    var pPromise = Project.findOne({
-                        id: v.project_id
-                    });
-                    pPromise.catch(next);
-
-                    if (i === projectMembers.length) {
-                        pPromise.then(function (project) {
-                            projects.push(project);
-                            next(Success(projects));
-                        });
-                        return;
-                    }
-                    return pPromise;
-                });
+                projectIds.push(v.project_id);
             });
+
+            var pPromise = Project.findAll({
+                where: {
+                    id: {
+                        $in: projectIds
+                    }
+                }
+            });
+
+            pPromise.then(function (projects) {
+                next(Success(projects));
+            });
+            pPromise.catch(next);
         });
 
     },
@@ -70,7 +59,7 @@ var ProjectService = {
     createProject: function (req, res, next, values) {
         var uPromise = User.findOne({
             where: {
-                id: values.user_id
+                id: values.owner_id
             }
         });
         uPromise.then(function (user) {
@@ -98,25 +87,15 @@ var ProjectService = {
                     icon: ''        //待定
                 };
                 var npPromise = Project.create(newProject);
-                npPromise.then(function (project_id) {
-                    if (project_id > 0) {
-                        // 创建 Git 仓库
-                        Project.findOne({
-                            id: project_id
-                        }, function (project) {
-                            next(Success(project));
-                        });
-
-                    } else {
-                        return next(CoreException.of(CoreException.PARAMETER_INVALID));
-                    }
+                npPromise.then(function (project) {
+                    // 创建 Git 仓库
+                    next(project);
                 });
+                npPromise.catch(next);
             });
         });
         uPromise.catch(next);
     }
 };
-
-ProjectService.legal = ['id', 'owner_id', 'name'];
 
 module.exports = ProjectService;

@@ -8,6 +8,16 @@ var ProjectRoute = function (app) {
         ProjectService.listPrivate(req, res, next);
     });
 
+    app.post('/api/project', function (req, res, next) {
+        if (!req.body || !req.body.name) {
+            return next(CoreException.of(CoreException.PARAMETER_INVALID));
+        }
+        var values = {
+            name: req.body.name,
+            owner_id: req.session['currentUser'].id
+        };
+        ProjectService.createProject(req, res, next, values);
+    });
 };
 
 module.exports = ProjectRoute;
