@@ -89,6 +89,7 @@ var ProjectService = {
                 var npPromise = Project.create(newProject);
                 npPromise.then(function (project) {
                     // 创建 Git 仓库
+
                     next(project);
                 });
                 npPromise.catch(next);
