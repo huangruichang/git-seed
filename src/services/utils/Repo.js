@@ -7,52 +7,52 @@ var EditTree = require('./EditTree');
 var EMPTY_SHA = "0000000000000000000000000000000000000000";
 class Repo {
 
-    constructor (repo, path) {
-        this.repo = repo;
-        this.path = path;
-        this.editTree = new EditTree(this);
-    }
+  constructor(repo, path) {
+    this.repo = repo;
+    this.path = path;
+    this.editTree = new EditTree(this);
+  }
 
-    getReposiotry () {
-        return this.repo;
-    }
+  getReposiotry() {
+    return this.repo;
+  }
 
-    getPath () {
-        return this.path;
-    }
+  getPath() {
+    return this.path;
+  }
 
-    getAbsolutePath () {
-        return this.repo.path();
-    }
+  getAbsolutePath() {
+    return this.repo.path();
+  }
 
-    hasCommits () {
-        return new Promise(function (resolve, reject) {
-            this.getHeadRef().then(function (head) {
-                if (!head) {
-                    reject(false);
-                }
-                resolve(true);
-            }).catch(function () {
-                reject(false);
-            });
-        });
-    }
+  hasCommits() {
+    return new Promise(function (resolve, reject) {
+      this.getHeadRef().then(function (head) {
+        if (!head) {
+          reject(false);
+        }
+        resolve(true);
+      }).catch(function () {
+        reject(false);
+      });
+    });
+  }
 
-    getHeadRef () {
-        return this.repo.head();
-    }
+  getHeadRef() {
+    return this.repo.head();
+  }
 
-    getCommit (object_id) {
-        return this.repo.getCommit(object_id);
-    }
+  getCommit(object_id) {
+    return this.repo.getCommit(object_id);
+  }
 
-    getRef (name) {
-        return this.repo.getReference(name);
-    }
+  getRef(name) {
+    return this.repo.getReference(name);
+  }
 
-    getRefs (type) {
-        return this.repo.getReferences(type);
-    }
+  getRefs(type) {
+    return this.repo.getReferences(type);
+  }
 
 
 }

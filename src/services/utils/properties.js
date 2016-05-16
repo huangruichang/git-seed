@@ -6,16 +6,16 @@ var readFile = Promise.promisify(fs.readFile);
 
 class Properties {
 
-    constructor () {
-        this.key_set = {};
-    }
+  constructor() {
+    this.key_set = {};
+  }
 
-    load (path) {
-        return readFile(path);
-    }
+  load(path) {
+    return readFile(path);
+  }
 
-    keySet () {
-        return this.key_set;
-    }
+  keySet() {
+    return this.key_set;
+  }
 
 }

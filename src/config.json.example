@@ -3,7 +3,7 @@
   "username": "username",
   "password": "password",
   "host": "127.0.0.1",
-  "dialect": "mysql",
+  "dialect": "mariadb",
   "pool": {
     "max": 5,
     "min": 0,
