@@ -1,31 +1,30 @@
-"use strict";
 
-var Promise = require('bluebird');
-var EditTree = require('./EditTree');
+const Promise = require('bluebird');
+const EditTree = require('./EditTree');
 
 
 var EMPTY_SHA = "0000000000000000000000000000000000000000";
 class Repo {
 
-  constructor(repo, path) {
+  constructor (repo, path) {
     this.repo = repo;
     this.path = path;
     this.editTree = new EditTree(this);
   }
 
-  getReposiotry() {
+  getReposiotry () {
     return this.repo;
   }
 
-  getPath() {
+  getPath () {
     return this.path;
   }
 
-  getAbsolutePath() {
+  getAbsolutePath () {
     return this.repo.path();
   }
 
-  hasCommits() {
+  hasCommits () {
     return new Promise(function (resolve, reject) {
       this.getHeadRef().then(function (head) {
         if (!head) {
@@ -38,22 +37,30 @@ class Repo {
     });
   }
 
-  getHeadRef() {
+  getHeadRef () {
     return this.repo.head();
   }
 
-  getCommit(object_id) {
+  getCommit (object_id) {
     return this.repo.getCommit(object_id);
   }
 
-  getRef(name) {
+  getRef (name) {
     return this.repo.getReference(name);
   }
 
-  getRefs(type) {
+  getRefs (type) {
     return this.repo.getReferences(type);
   }
 
-
+  commitFiles (branch, files, person, message) {
+    return new Promise((resolve, reject) => {
+      const fileMap = {};
+      for (let key in files) {
+        
+      }
+    });
+  }
 }
 
+module.exports = Repo;

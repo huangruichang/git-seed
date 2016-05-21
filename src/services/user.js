@@ -23,6 +23,7 @@ var UserService = {
     uPromise.then(function (user) {
       if (!user) next(CoreException.of(CoreException.USER_NOT_EXISTS));
       var result = UserService.checkEncodePassowrd(user, password);
+      
       if (!result) {
         return next(CoreException.of(CoreException.USER_PASSWORD_ERROR));
       }
